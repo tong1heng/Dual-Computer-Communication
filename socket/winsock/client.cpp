@@ -1,113 +1,11 @@
 #include "client.h"
 #include "ui_client.h"
 
-Ui::client *ui_c = nullptr;
+Ui::client* uic = nullptr;
 
 void ui_init(Ui::client *ui_ptr)
 {
-    ui_c = ui_ptr;
-}
-/*
-void* recv2(SOCKET sockConn)
-{
-    char recvBuf[10000];
-    memset(recvBuf, 0, sizeof(recvBuf));
-    //接收数据
-    while(true)
-    {
-        int nRecv = ::recv(sockConn, recvBuf, sizeof(recvBuf), 0);
-        if(nRecv>0)
-        {
-            //cout<<recvBuf<<endl;
-            QDateTime current_date_time =QDateTime::currentDateTime();
-            QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-            ui_c->clientTextEdit->append(current_date);
-            QString message(recvBuf);
-            ui_c->clientTextEdit->append(">>"+message);
-        }
-        else
-            break;
-    }
-}
-*/
-void* recv2(SOCKET sockConn)
-{
-    char recvBuf[10000];
-    memset(recvBuf, 0, sizeof(recvBuf));
-    //接收数据
-
-    int nRecv = ::recv(sockConn, recvBuf, sizeof(recvBuf), 0);
-    if(nRecv>0)
-    {
-        //cout<<recvBuf<<endl;
-        QDateTime current_date_time =QDateTime::currentDateTime();
-        QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-        ui_c->clientTextEdit->append(current_date);
-        QString message(recvBuf);
-        ui_c->clientTextEdit->append(">>"+message);
-    }
-
-}
-/*
-void* send2(void* args)
-{
-    SOCKET sockClient1 = *( (SOCKET*)args );
-    while(true)
-    {
-        //char buff1[10000]  ;
-        //cout<<"我说：";
-        //cin>>buff1;
-        if(ui_c->message->toPlainText() == "")
-        {
-            break;
-        }
-        QString str=ui_c->message->toPlainText();
-        QByteArray byteArray=str.toUtf8();
-        char *buff1=byteArray.data();
-
-        int e = send(sockClient1, buff1, sizeof(buff1), 0);
-        if(e == SOCKET_ERROR)
-        {
-            //printf("send failed");
-            QMessageBox::information(NULL,"Error", "Send failed");
-            break;
-        }
-        QDateTime current_date_time =QDateTime::currentDateTime();
-        QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-        ui_c->clientTextEdit->append(current_date);
-        QString message=">>" + ui_c->message->toPlainText();
-        ui_c->clientTextEdit->append(message);
-    }
-}
-*/
-void* send2(void* args)
-{
-    SOCKET sockClient1 = *( (SOCKET*)args );
-
-    //char buff1[10000]  ;
-    //cout<<"我说：";
-    //cin>>buff1;
-    if(ui_c->message->toPlainText() == "")
-    {
-
-    }
-    QString str=ui_c->message->toPlainText();
-    QByteArray byteArray=str.toUtf8();
-    char *buff1=byteArray.data();
-
-    int e = send(sockClient1, buff1, sizeof(buff1), 0);
-    if(e == SOCKET_ERROR)
-    {
-        //printf("send failed");
-        QMessageBox::information(NULL,"Error", "Send failed");
-
-    }
-    QDateTime current_date_time =QDateTime::currentDateTime();
-    QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-    ui_c->clientTextEdit->append(current_date);
-    QString message=">>" + ui_c->message->toPlainText();
-    ui_c->clientTextEdit->append(message);
-
+    uic = ui_ptr;
 }
 
 client::client(QWidget *parent) :
@@ -160,21 +58,48 @@ void client::on_connectButton_clicked()
     {
         ui->clientTextEdit->append("Successfully Connect");
     }
+    pthread_t tids[2];
+    int ret = pthread_create( &tids[0], NULL, ctrlRecv, (void*)&sockClient ); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
+    if( ret != 0 ) //创建线程成功返回0
+    {
+        //std::cout << "pthread_create error:error_code=" << ret << std::endl;
+        QMessageBox::information(this,"Error", "pthread_create error:error_code="+QString(ret));
+    }
 }
 
 void client::on_sendMessage_clicked()
 {
-    char buff[1024];
-    memset(buff, 0, sizeof(buff));
-    pthread_t tids[2];
-    int ret = pthread_create( &tids[0], NULL, send2, (void*)&sockClient ); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
-    if( ret != 0 ) //创建线程成功返回0
-    {
-        //cout << "pthread_create error:error_code=" << ret << endl;
+    SOCKET sockClient1 = sockClient;  //建立套接字
+    char *buff1;
+
+    // 当sendMessage clicked之后
+
+    QString tmp = ui->message->toPlainText();
+    QByteArray ba = tmp.toLatin1(); // must
+    buff1 = ba.data();
+
+    if (buff1 == "") {
+        return;
     }
 
+    int e = send(sockClient1, buff1, sizeof(buff1), 0);
+    if (e == SOCKET_ERROR) {
+        qDebug() << "send failed";
+        return;
+    }
+    ui->clientTextEdit->append("我说：" + tmp);
+}
+
+void* client::ctrlRecv(void *args) {
+    SOCKET sockConn = *( (SOCKET*)args );//建立套接字
+    char recvBuf[10000];
+    memset(recvBuf, 0, sizeof(recvBuf));
     //接收数据
-    recv(sockClient, buff, sizeof(buff), 0);
-    //printf("%s\n", buff);
-    recv2(sockClient);
+    while (true) {
+        int nRecv = ::recv(sockConn, recvBuf, sizeof(recvBuf), 0);
+        if (nRecv > 0)
+            uic->clientTextEdit->append(QString(QLatin1String(recvBuf)));
+        else
+            break;
+    }
 }

@@ -10,10 +10,14 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <iostream>
+#include <QDebug>
+
 
 namespace Ui {
 class client;
 }
+
+extern Ui::client *uic;
 
 class client : public QMainWindow
 {
@@ -31,10 +35,8 @@ private slots:
 private:
     Ui::client *ui;
     SOCKET sockClient;
+    static void* ctrlRecv(void* args);
 };
 
 void ui_init(Ui::client *ui_ptr);
-void* recv2(SOCKET sockConn);
-void* send2(void* args);
-
 #endif // CLIENT_H
