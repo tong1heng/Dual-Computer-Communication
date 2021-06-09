@@ -10,11 +10,14 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <iostream>
+#include <QDebug>
 
 
 namespace Ui {
 class server;
 }
+
+extern Ui::server *uis;
 
 class server : public QMainWindow
 {
@@ -34,9 +37,8 @@ private slots:
 private:
     Ui::server *ui;
     SOCKET sockConn;
+    static void* ctrlRecvS(void *args);
 };
-void ui_init(Ui::server *ui_ptr);
-void* recv1(SOCKET sockConn);
-void* send1(void* args);
+void i_init(Ui::server *ui_ptr);
 
 #endif // SERVER_H
