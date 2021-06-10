@@ -3,56 +3,54 @@
 
 Ui::server* uis = nullptr;
 
-void ui_init(Ui::server *ui_ptr)
-{
+void ui_init(Ui::server *ui_ptr) {
     uis = ui_ptr;
 }
 
 server::server(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::server)
-{
+    ui(new Ui::server) {
     ui->setupUi(this);
     ui_init(ui);
 }
 
-server::~server()
-{
+server::~server() {
     delete ui;
 }
 
-void server::on_start_clicked()
-{
-    WSADATA wsaData;
-    QString p=ui->port->text();
-    int port=p.toInt();
+void server::on_start_clicked() {
+    WSADATA wsaData,wsaFile;
+    int port = ui->port->text().toInt();
+    char buf[] = "Server: Hello, I'm a server!";
 
-    char buf[] = "Server: hello, I'm a server!";
-
-
-
-    if(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) //加载套接字库
-    {
-        QMessageBox::information(this,"Error", "Failed to load Winsock");
+    if(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0 || WSAStartup(MAKEWORD(2, 2), &wsaFile) != 0) { //加载套接字库
+        QMessageBox::information(this, "Error", "Failed to load Winsock");
         return ;
     }
 
     //创建用于监听的套接字
     SOCKET sockSrv = socket(AF_INET, SOCK_STREAM, 0);
+    SOCKET sockSrvFile = socket(AF_INET, SOCK_STREAM, 0);
 
     SOCKADDR_IN addrSrv;
     addrSrv.sin_family = AF_INET;
     addrSrv.sin_port = htons(port); //1024以上的端口号
     addrSrv.sin_addr.S_un.S_addr = htonl(INADDR_ANY); //INADDR_ANY 代表任意ip
 
+    SOCKADDR_IN addrSrvFile;
+    addrSrvFile.sin_family = AF_INET;
+    addrSrvFile.sin_port = htons(7777); //1024以上的端口号
+    addrSrvFile.sin_addr.S_un.S_addr = htonl(INADDR_ANY); //INADDR_ANY 代表任意ip
+
     int retVal = bind(sockSrv, (LPSOCKADDR)&addrSrv, sizeof(SOCKADDR_IN));
-    if(retVal == SOCKET_ERROR){
-        QMessageBox::information(this,"Error", "Failed bind:"+QString(WSAGetLastError()));
+    int retValFile = bind(sockSrvFile, (LPSOCKADDR)&addrSrvFile, sizeof(SOCKADDR_IN));
+    if(retVal == SOCKET_ERROR || retValFile == SOCKET_ERROR) {
+        QMessageBox::information(this, "Error", "Bind failed:" + QString(WSAGetLastError()));
         return ;
     }
 
-    if(listen(sockSrv,10) ==SOCKET_ERROR){//10代表允许连接的个数
-        QMessageBox::information(this,"Error", "Listen failed:"+QString(WSAGetLastError()));
+    if(listen(sockSrv,10) ==SOCKET_ERROR || listen(sockSrvFile,10) ==SOCKET_ERROR) { //10代表允许连接的个数
+        QMessageBox::information(this, "Error", "Listen failed:" + QString(WSAGetLastError()));
         return ;
     }
 
@@ -60,67 +58,142 @@ void server::on_start_clicked()
 
     SOCKADDR_IN addrClient;
     int len = sizeof(SOCKADDR);
-    sockConn = accept(sockSrv, (SOCKADDR *) &addrClient, &len);//会阻塞进程，直到有客户端连接上来为止
+    sockConn = accept(sockSrv, (SOCKADDR *) &addrClient, &len); //会阻塞进程，直到有客户端连接上来为止
 
-    if(sockConn == SOCKET_ERROR){
-        QMessageBox::information(this,"Error", "Accept failed:"+QString(WSAGetLastError()));
+    SOCKADDR_IN addrClientFile;
+    int lenFile = sizeof(SOCKADDR);
+    sockConnFile = accept(sockSrvFile, (SOCKADDR *) &addrClientFile, &lenFile); //会阻塞进程，直到有客户端连接上来为止
+
+    if(sockConn == SOCKET_ERROR || sockConnFile == SOCKET_ERROR) {
+        QMessageBox::information(this, "Error", "Accept failed:" + QString(WSAGetLastError()));
         return ;
     }
 
     ui->textEdit->append("Accept client IP:" + QString(inet_ntoa(addrClient.sin_addr)));
     
-//    int iSend = send(sockConn, buf, sizeof(buf), 0);
-//    if (iSend == SOCKET_ERROR) {
-//        qDebug() << "send failed";
-//    }
+    int iSend = send(sockConn, buf, sizeof(buf), 0);
+    if (iSend == SOCKET_ERROR) {
+        QMessageBox::information(this, "Error", "Send failed");
+    }
+
     pthread_t tids[2];
-    int ret = pthread_create( &tids[0], NULL, ctrlRecvS, (void*)&sockConn ); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
-    if( ret != 0 ) //创建线程成功返回0
-    {
-        //std::cout << "pthread_create error:error_code=" << ret << std::endl;
-        QMessageBox::information(this,"Error", "pthread_create error:error_code="+QString(ret));
+    int ret = pthread_create(&tids[0], NULL, ctrlRecvS, (void*)&sockConn); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
+    if( ret != 0 ) { //创建线程成功返回0
+        QMessageBox::information(this,"Error", "pthread_create error:error_code=" + QString(ret));
+    }
+
+    pthread_t tidsFile[2];
+    int retFile = pthread_create(&tidsFile[0], NULL, ctrlRecvSFile, (void*)&sockConnFile); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
+    if( retFile != 0 ) { //创建线程成功返回0
+        QMessageBox::information(this,"Error", "pthread_create error:error_code=" + QString(retFile));
     }
 }
 
-void server::on_file_clicked()
-{
-    QString FileName = QFileDialog::getOpenFileName(this,tr(""),"",tr("All(*.*)")); //选择路径
-    ui->filepath->setText(FileName);
-}
-
-void server::on_sendMessage_clicked()
-{
-    SOCKET sockClient1 = sockConn;  //建立套接字
-    char *buff1;
-
-    // 当sendMessage clicked之后
-
+void server::on_sendMessageButton_clicked() {
+    //SOCKET sockClient1 = sockConn;  //建立套接字
+    char *buff;                    //发送缓冲区
+    //convert into char*
     QString tmp = ui->message->toPlainText();
-    QByteArray ba = tmp.toLatin1(); // must
-    buff1 = ba.data();
+    QByteArray ba = tmp.toLatin1();
+    buff = ba.data();
 
-    if (buff1 == "") {
+    if (buff == "") {
         return;
     }
 
-    int e = send(sockClient1, buff1, sizeof(buff1), 0);
+    QDateTime current_date_time =QDateTime::currentDateTime();
+    QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+    QString message="服务器>>" + ui->message->toPlainText();
+
+    int e = send(sockConn, buff, sizeof(buff), 0);
     if (e == SOCKET_ERROR) {
-        qDebug() << "send failed";
+        QMessageBox::information(this, "Error", "Send failed");
         return;
     }
-    ui->textEdit->append("我说：" + tmp);
+    ui->textEdit->append(current_date);
+    ui->textEdit->append(message);
+    ui->message->clear();
 }
 
 void* server::ctrlRecvS(void* args) {
-    SOCKET sockConn = *( (SOCKET*)args );//建立套接字
-    char recvBuf[10000];
+    SOCKET sockConn = *( (SOCKET*)args );   //建立套接字
+    char recvBuf[10000];                    //接收缓冲区
     memset(recvBuf, 0, sizeof(recvBuf));
     //接收数据
     while (true) {
         int nRecv = ::recv(sockConn, recvBuf, sizeof(recvBuf), 0);
-        if (nRecv > 0)
-            uis->textEdit->append(QString(QLatin1String(recvBuf)));
+        if (nRecv > 0) {
+            QDateTime current_date_time = QDateTime::currentDateTime();
+            QString current_date = current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+            uis->textEdit->append(current_date);
+            uis->textEdit->append("客户端>>" + QString(QLatin1String(recvBuf)));
+        }
         else
             break;
     }
+}
+
+void* server::ctrlRecvSFile(void* args) {
+    SOCKET sockConnFile = *( (SOCKET*)args );   //建立套接字
+    char recvBuf[10000];                        //接收缓冲区
+    memset(recvBuf, 0, sizeof(recvBuf));
+    //接收数据
+    while (true) {
+        int nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0);
+        if (nRecv > 0) {
+            QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
+            if (!fileName.isNull()) {
+                FILE *fp = fopen(fileName.toLatin1().data(), "wb");
+                fwrite(recvBuf, nRecv, 1, fp);
+                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {
+                    fwrite(recvBuf, nRecv, 1, fp);
+                }
+
+                QDateTime current_date_time = QDateTime::currentDateTime();
+                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+                uis->textEdit->append(current_date);
+                uis->textEdit->append("文件已成功接收");
+            }
+            else {  //取消接收
+                QDateTime current_date_time = QDateTime::currentDateTime();
+                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+                uis->textEdit->append(current_date);
+                uis->textEdit->append("取消接收文件");
+                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {}
+            }
+        }
+        else
+            break;
+    }
+}
+
+void server::on_findFileButton_clicked() {
+    QString FileName = QFileDialog::getOpenFileName(this,tr(""),"",tr("All(*.*)")); //选择路径
+    ui->filePath->setText(FileName);
+}
+
+void server::on_sendFileButton_clicked() {
+    char buff[10000];                    //发送缓冲区
+
+    FILE *fp = fopen(ui->filePath->toPlainText().toLatin1().data(), "rb");   //以二进制方式打开文件
+    if (fp == NULL) {
+        QMessageBox::information(this, "Error", "Cannot open file");
+        return ;
+    }
+
+    int nCount;
+    while ((nCount = fread(buff, 1, sizeof(buff), fp)) > 0) {
+        int e=send(sockConnFile, buff, nCount, 0);
+        if (e == SOCKET_ERROR) {
+            QMessageBox::information(this, "Error", "Send failed");
+            return;
+        }
+    }
+
+    QDateTime current_date_time =QDateTime::currentDateTime();
+    QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+    ui->textEdit->append(current_date);
+    ui->textEdit->append("文件" + ui->filePath->toPlainText() + "发送成功");
+    QMessageBox::information(this, "提示", "文件" + ui->filePath->toPlainText() + "发送成功");
+    ui->filePath->clear();
 }

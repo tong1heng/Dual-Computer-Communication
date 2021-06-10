@@ -35,7 +35,7 @@
        <height>279</height>
       </rect>
      </property>
-     <widget class="QTextEdit" name="clientTextEdit">
+     <widget class="QTextEdit" name="textEdit">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -49,7 +49,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="readOnly">
@@ -66,6 +66,11 @@
       <width>111</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
     </property>
     <property name="readOnly">
      <bool>false</bool>
@@ -107,7 +112,7 @@
      <string>连接</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="sendFile">
+   <widget class="QPushButton" name="sendFileButton">
     <property name="geometry">
      <rect>
       <x>660</x>
@@ -149,9 +154,9 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>450</x>
       <y>50</y>
-      <width>70</width>
+      <width>50</width>
       <height>20</height>
      </rect>
     </property>
@@ -161,10 +166,10 @@
      </font>
     </property>
     <property name="text">
-     <string>端口号:</string>
+     <string>端口:</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="exit">
+   <widget class="QPushButton" name="exitButton">
     <property name="geometry">
      <rect>
       <x>110</x>
@@ -182,7 +187,7 @@
      <string>退出</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="file">
+   <widget class="QPushButton" name="findFileButton">
     <property name="geometry">
      <rect>
       <x>660</x>
@@ -221,7 +226,7 @@
        <height>49</height>
       </rect>
      </property>
-     <widget class="QTextEdit" name="clientFilePath">
+     <widget class="QTextEdit" name="filePath">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -229,6 +234,11 @@
         <width>541</width>
         <height>50</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
       </property>
      </widget>
     </widget>
@@ -265,11 +275,16 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="sendMessage">
+   <widget class="QPushButton" name="sendMessageButton">
     <property name="geometry">
      <rect>
       <x>660</x>
@@ -299,6 +314,11 @@
       <height>50</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
    </widget>
    <widget class="QLineEdit" name="serverIPAddress">
     <property name="geometry">
@@ -308,6 +328,11 @@
       <width>111</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
     </property>
     <property name="text">
      <string/>

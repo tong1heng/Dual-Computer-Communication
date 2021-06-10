@@ -30,12 +30,18 @@ public:
 private slots:
     void on_connectButton_clicked();
 
-    void on_sendMessage_clicked();
+    void on_sendMessageButton_clicked();
+
+    void on_findFileButton_clicked();
+
+    void on_sendFileButton_clicked();
 
 private:
     Ui::client *ui;
     SOCKET sockClient;
+    SOCKET sockClientFile;
     static void* ctrlRecv(void* args);
+    static void* ctrlRecvFile(void* args);
 };
 
 void ui_init(Ui::client *ui_ptr);
