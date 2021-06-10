@@ -39,7 +39,7 @@ void server::on_start_clicked() {
 
     SOCKADDR_IN addrSrvFile;
     addrSrvFile.sin_family = AF_INET;
-    addrSrvFile.sin_port = htons(7777); //1024以上的端口号
+    addrSrvFile.sin_port = htons(9999); //1024以上的端口号
     addrSrvFile.sin_addr.S_un.S_addr = htonl(INADDR_ANY); //INADDR_ANY 代表任意ip
 
     int retVal = bind(sockSrv, (LPSOCKADDR)&addrSrv, sizeof(SOCKADDR_IN));
@@ -60,10 +60,7 @@ void server::on_start_clicked() {
     int len = sizeof(SOCKADDR);
     sockConn = accept(sockSrv, (SOCKADDR *) &addrClient, &len); //会阻塞进程，直到有客户端连接上来为止
 
-    SOCKADDR_IN addrClientFile;
-    int lenFile = sizeof(SOCKADDR);
-    sockConnFile = accept(sockSrvFile, (SOCKADDR *) &addrClientFile, &lenFile); //会阻塞进程，直到有客户端连接上来为止
-
+    
     if(sockConn == SOCKET_ERROR || sockConnFile == SOCKET_ERROR) {
         QMessageBox::information(this, "Error", "Accept failed:" + QString(WSAGetLastError()));
         return ;
@@ -81,12 +78,15 @@ void server::on_start_clicked() {
     if( ret != 0 ) { //创建线程成功返回0
         QMessageBox::information(this,"Error", "pthread_create error:error_code=" + QString(ret));
     }
-
+    
+    // 开一个不断循环等待接收的线程
     pthread_t tidsFile[2];
-    int retFile = pthread_create(&tidsFile[0], NULL, ctrlRecvSFile, (void*)&sockConnFile); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
+    int retFile = pthread_create(&tidsFile[0], NULL, ctrlRecvSFile, (void*)&sockSrvFile); //参数：创建的线程id，线程参数，线程运行函数的起始地址，运行函数的参数
     if( retFile != 0 ) { //创建线程成功返回0
         QMessageBox::information(this,"Error", "pthread_create error:error_code=" + QString(retFile));
     }
+    
+
 }
 
 void server::on_sendMessageButton_clicked() {
@@ -134,37 +134,72 @@ void* server::ctrlRecvS(void* args) {
 }
 
 void* server::ctrlRecvSFile(void* args) {
-    SOCKET sockConnFile = *( (SOCKET*)args );   //建立套接字
-    char recvBuf[10000];                        //接收缓冲区
-    memset(recvBuf, 0, sizeof(recvBuf));
-    //接收数据
+    SOCKET sockLocFile = *( (SOCKET*)args );   //建立套接字
+    qDebug() << "not in the loop";
+    
     while (true) {
-        int nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0);
-        if (nRecv > 0) {
-            QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
-            if (!fileName.isNull()) {
-                FILE *fp = fopen(fileName.toLatin1().data(), "wb");
-                fwrite(recvBuf, nRecv, 1, fp);
-                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {
-                    fwrite(recvBuf, nRecv, 1, fp);
-                }
-
-                QDateTime current_date_time = QDateTime::currentDateTime();
-                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-                uis->textEdit->append(current_date);
-                uis->textEdit->append("文件已成功接收");
-            }
-            else {  //取消接收
-                QDateTime current_date_time = QDateTime::currentDateTime();
-                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-                uis->textEdit->append(current_date);
-                uis->textEdit->append("取消接收文件");
-                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {}
-            }
+    	SOCKADDR_IN addrClientFile;
+    	int lenFile = sizeof(SOCKADDR);
+        qDebug() << "before the accept()";
+        SOCKET sockConnFile = accept(sockLocFile, (SOCKADDR *) &addrClientFile, &lenFile); //会阻塞进程，直到有客户端连接上来为止
+        if(sockConnFile == SOCKET_ERROR) {
+            qDebug() << "accept() error";
         }
-        else
-            break;
+        qDebug() << "accept()";
+
+        // 确定路径
+        QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
+//        QString fileName = "C:\\Users\\28320\\Desktop\\out.out";
+        FILE *fp = fopen(fileName.toLatin1().data(), "wb");   //以二进制方式打开（创建）文件
+        if (fp == NULL)
+        {
+            qDebug() << "Cannot open file,press any key to exit!\n";
+            system("pause");
+            exit(0);
+        }
+
+        // 接收文件
+        char buffer[100000] = { 0 };
+        int nCount;
+        while ((nCount = recv(sockConnFile, buffer, 100000, 0)) > 0)
+        {
+            fwrite(buffer, nCount, 1, fp);
+        }
+//	puts("File transfer success!\n");
+
+        fclose(fp);
+        closesocket(sockConnFile);
     }
+    
+
+//    //接收数据
+//    while (true) {
+//        int nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0);
+//        if (nRecv > 0) {
+//            QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
+//            if (!fileName.isNull()) {
+//                FILE *fp = fopen(fileName.toLatin1().data(), "wb");
+//                fwrite(recvBuf, nRecv, 1, fp);
+//                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {
+//                    fwrite(recvBuf, nRecv, 1, fp);
+//                }
+
+//                QDateTime current_date_time = QDateTime::currentDateTime();
+//                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+//                uis->textEdit->append(current_date);
+//                uis->textEdit->append("文件已成功接收");
+//            }
+//            else {  //取消接收
+//                QDateTime current_date_time = QDateTime::currentDateTime();
+//                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+//                uis->textEdit->append(current_date);
+//                uis->textEdit->append("取消接收文件");
+//                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {}
+//            }
+//        }
+//        else
+//            break;
+//    }
 }
 
 void server::on_findFileButton_clicked() {

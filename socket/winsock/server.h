@@ -39,7 +39,7 @@ private slots:
 private:
     Ui::server *ui;
     SOCKET sockConn;
-    SOCKET sockConnFile;
+    SOCKET sockConnFile; // 用来接收，别人想传，需要来connect我
     static void* ctrlRecvS(void *args);
     static void* ctrlRecvSFile(void* args);
 };
