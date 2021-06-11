@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <QDebug>
+#include <QTextCodec>
 
 
 namespace Ui {
@@ -27,6 +28,9 @@ public:
     explicit server(QWidget *parent = nullptr);
     ~server();
 
+public slots:
+    void getFilePath();
+
 private slots:
     void on_start_clicked();
 
@@ -42,6 +46,11 @@ private:
     SOCKET sockConnFile; // 用来接收，别人想传，需要来connect我
     static void* ctrlRecvS(void *args);
     static void* ctrlRecvSFile(void* args);
+    static server* MyPointer;
+
+signals:
+    void createQFileDialog();
+
 };
 void i_init(Ui::server *ui_ptr);
 

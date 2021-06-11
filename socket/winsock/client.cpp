@@ -22,7 +22,7 @@ void client::on_connectButton_clicked() {
     WSADATA wsaData,wsaFile;
     int port=ui->port->text().toInt();
     char *IPAddress;
-    QByteArray ba = ui->serverIPAddress->text().toLatin1();
+    QByteArray ba = ui->serverIPAddress->text().toUtf8();
     IPAddress = ba.data();
 
     if(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0 || WSAStartup(MAKEWORD(2, 2), &wsaFile) != 0) {
@@ -82,7 +82,7 @@ void client::on_sendMessageButton_clicked() {
     char *buff1;                        //发送缓冲区
     //convert into char*
     QString tmp = ui->message->toPlainText();
-    QByteArray ba = tmp.toLatin1();
+    QByteArray ba = tmp.toUtf8();
     buff1 = ba.data();
 
     if (buff1 == "") {
@@ -137,7 +137,7 @@ void* client::ctrlRecvFile(void *args) {
             //QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
             QString fileName="E:\\Todo\\rec.mp4";
             if (!fileName.isNull()) {
-                FILE *fp = fopen(fileName.toLatin1().data(), "wb");
+                FILE *fp = fopen(fileName.toUtf8().data(), "wb");
                 fwrite(recvBuf, nRecv, 1, fp);
                 while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0x40)) > 0) {
                     fwrite(recvBuf, nRecv, 1, fp);
@@ -178,6 +178,7 @@ void client::on_sendFileButton_clicked()
     if(::connect(sock, (struct sockaddr*)&sockAddr, sizeof(SOCKADDR)) == INVALID_SOCKET) {
         QMessageBox::information(this, "Error", "Connect failed:" + QString(WSAGetLastError()));
         return ;
+<<<<<<< Updated upstream
     }
 //    ::connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));
     //先检查文件是否存在
@@ -185,6 +186,21 @@ void client::on_sendFileButton_clicked()
 //    const char *filename = "C:/Users/28320/Desktop/file/a.in";     //文件名
 
     FILE *fp = fopen(ui->filePath->toPlainText().toLatin1().data(), "rb");  //以二进制方式打开文件
+    if (fp == NULL) {
+        qDebug() << "Cannot open file,press any key to exit!\n";
+        system("pause");
+        exit(0);
+=======
+>>>>>>> Stashed changes
+    }
+//    ::connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));
+    //先检查文件是否存在
+    qDebug() << "connect";
+//    const char *filename = "C:/Users/28320/Desktop/file/a.in";     //文件名
+    qDebug()<<ui->filePath->toPlainText().toUtf8().data();
+    QTextCodec *code = QTextCodec::codecForName("GB2312");//解决中文路径问题
+
+    FILE *fp = fopen(code->fromUnicode(ui->filePath->toPlainText().toUtf8()).data(), "rb");  //以二进制方式打开文件
     if (fp == NULL) {
         qDebug() << "Cannot open file,press any key to exit!\n";
         system("pause");
@@ -209,7 +225,11 @@ void client::on_sendFileButton_clicked()
 
 //    char buff[10000];                    //发送缓冲区
 
+<<<<<<< Updated upstream
 //    FILE *fp = fopen(ui->filePath->toPlainText().toLatin1().data(), "rb");   //以二进制方式打开文件
+=======
+//    FILE *fp = fopen(ui->filePath->toPlainText().toUtf8().data(), "rb");   //以二进制方式打开文件
+>>>>>>> Stashed changes
 //    if (fp == NULL) {
 //        QMessageBox::information(this, "Error", "Cannot open file");
 //        return ;

@@ -1,6 +1,8 @@
 #include "server.h"
 #include "ui_server.h"
 
+QString saveFilePath;
+server* server::MyPointer =nullptr;
 Ui::server* uis = nullptr;
 
 void ui_init(Ui::server *ui_ptr) {
@@ -12,10 +14,17 @@ server::server(QWidget *parent) :
     ui(new Ui::server) {
     ui->setupUi(this);
     ui_init(ui);
+    MyPointer=this;
+    connect(server::MyPointer, &server::createQFileDialog, this, &server::getFilePath);
 }
 
 server::~server() {
     delete ui;
+}
+
+void server::getFilePath() {
+    saveFilePath = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
+    qDebug()<<saveFilePath;
 }
 
 void server::on_start_clicked() {
@@ -94,7 +103,7 @@ void server::on_sendMessageButton_clicked() {
     char *buff;                    //发送缓冲区
     //convert into char*
     QString tmp = ui->message->toPlainText();
-    QByteArray ba = tmp.toLatin1();
+    QByteArray ba = tmp.toUtf8();
     buff = ba.data();
 
     if (buff == "") {
@@ -148,9 +157,23 @@ void* server::ctrlRecvSFile(void* args) {
         qDebug() << "accept()";
 
         // 确定路径
+<<<<<<< Updated upstream
         QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
 //        QString fileName = "C:\\Users\\28320\\Desktop\\out.out";
         FILE *fp = fopen(fileName.toLatin1().data(), "wb");   //以二进制方式打开（创建）文件
+=======
+
+
+        //QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
+        emit MyPointer->createQFileDialog();
+
+        while(saveFilePath=="") {}
+        qDebug()<<"fopen之前的path"<<saveFilePath;
+        //QString fileName = "E:\\todo\\1.out";
+
+        QTextCodec *code = QTextCodec::codecForName("GB2312");//解决中文路径问题
+        FILE *fp = fopen(code->fromUnicode(saveFilePath).data(), "wb");   //以二进制方式打开（创建）文件
+>>>>>>> Stashed changes
         if (fp == NULL)
         {
             qDebug() << "Cannot open file,press any key to exit!\n";
@@ -164,11 +187,19 @@ void* server::ctrlRecvSFile(void* args) {
         while ((nCount = recv(sockConnFile, buffer, 100000, 0)) > 0)
         {
             fwrite(buffer, nCount, 1, fp);
+<<<<<<< Updated upstream
+=======
+            qDebug()<<"fwrite()";
+>>>>>>> Stashed changes
         }
 //	puts("File transfer success!\n");
 
         fclose(fp);
         closesocket(sockConnFile);
+<<<<<<< Updated upstream
+=======
+        saveFilePath="";
+>>>>>>> Stashed changes
     }
     
 
@@ -178,7 +209,11 @@ void* server::ctrlRecvSFile(void* args) {
 //        if (nRecv > 0) {
 //            QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
 //            if (!fileName.isNull()) {
+<<<<<<< Updated upstream
 //                FILE *fp = fopen(fileName.toLatin1().data(), "wb");
+=======
+//                FILE *fp = fopen(fileName.toUtf8().data(), "wb");
+>>>>>>> Stashed changes
 //                fwrite(recvBuf, nRecv, 1, fp);
 //                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {
 //                    fwrite(recvBuf, nRecv, 1, fp);
@@ -210,7 +245,7 @@ void server::on_findFileButton_clicked() {
 void server::on_sendFileButton_clicked() {
     char buff[10000];                    //发送缓冲区
 
-    FILE *fp = fopen(ui->filePath->toPlainText().toLatin1().data(), "rb");   //以二进制方式打开文件
+    FILE *fp = fopen(ui->filePath->toPlainText().toUtf8().data(), "rb");   //以二进制方式打开文件
     if (fp == NULL) {
         QMessageBox::information(this, "Error", "Cannot open file");
         return ;

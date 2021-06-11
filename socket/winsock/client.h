@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <QDebug>
+#include <QTextCodec>
 
 
 namespace Ui {
