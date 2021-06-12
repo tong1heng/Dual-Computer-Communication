@@ -46,8 +46,8 @@ private:
     SOCKET sockConnFile; // 用来接收，别人想传，需要来connect我
     static void* ctrlRecvS(void *args);
     static void* ctrlRecvSFile(void* args);
-    static server* MyPointer;
 
+    static server* MyPointer;
 signals:
     void createQFileDialog();
 

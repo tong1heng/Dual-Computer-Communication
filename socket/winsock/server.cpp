@@ -135,7 +135,7 @@ void* server::ctrlRecvS(void* args) {
             QDateTime current_date_time = QDateTime::currentDateTime();
             QString current_date = current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
             uis->textEdit->append(current_date);
-            uis->textEdit->append("客户端>>" + QString(QLatin1String(recvBuf)));
+            uis->textEdit->append("客户端>>" + QString(recvBuf));
         }
         else
             break;
@@ -149,31 +149,18 @@ void* server::ctrlRecvSFile(void* args) {
     while (true) {
     	SOCKADDR_IN addrClientFile;
     	int lenFile = sizeof(SOCKADDR);
-        qDebug() << "before the accept()";
         SOCKET sockConnFile = accept(sockLocFile, (SOCKADDR *) &addrClientFile, &lenFile); //会阻塞进程，直到有客户端连接上来为止
         if(sockConnFile == SOCKET_ERROR) {
             qDebug() << "accept() error";
         }
-        qDebug() << "accept()";
 
-        // 确定路径
-<<<<<<< Updated upstream
-        QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
-//        QString fileName = "C:\\Users\\28320\\Desktop\\out.out";
-        FILE *fp = fopen(fileName.toLatin1().data(), "wb");   //以二进制方式打开（创建）文件
-=======
-
-
-        //QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
         emit MyPointer->createQFileDialog();
 
         while(saveFilePath=="") {}
-        qDebug()<<"fopen之前的path"<<saveFilePath;
-        //QString fileName = "E:\\todo\\1.out";
+//        qDebug()<<"fopen之前的path"<<saveFilePath;
 
         QTextCodec *code = QTextCodec::codecForName("GB2312");//解决中文路径问题
         FILE *fp = fopen(code->fromUnicode(saveFilePath).data(), "wb");   //以二进制方式打开（创建）文件
->>>>>>> Stashed changes
         if (fp == NULL)
         {
             qDebug() << "Cannot open file,press any key to exit!\n";
@@ -187,54 +174,13 @@ void* server::ctrlRecvSFile(void* args) {
         while ((nCount = recv(sockConnFile, buffer, 100000, 0)) > 0)
         {
             fwrite(buffer, nCount, 1, fp);
-<<<<<<< Updated upstream
-=======
             qDebug()<<"fwrite()";
->>>>>>> Stashed changes
         }
-//	puts("File transfer success!\n");
 
         fclose(fp);
         closesocket(sockConnFile);
-<<<<<<< Updated upstream
-=======
         saveFilePath="";
->>>>>>> Stashed changes
     }
-    
-
-//    //接收数据
-//    while (true) {
-//        int nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0);
-//        if (nRecv > 0) {
-//            QString fileName = QFileDialog::getSaveFileName(NULL,tr(""),"",tr("All(*.*)")); //选择文件保存路径
-//            if (!fileName.isNull()) {
-<<<<<<< Updated upstream
-//                FILE *fp = fopen(fileName.toLatin1().data(), "wb");
-=======
-//                FILE *fp = fopen(fileName.toUtf8().data(), "wb");
->>>>>>> Stashed changes
-//                fwrite(recvBuf, nRecv, 1, fp);
-//                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {
-//                    fwrite(recvBuf, nRecv, 1, fp);
-//                }
-
-//                QDateTime current_date_time = QDateTime::currentDateTime();
-//                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-//                uis->textEdit->append(current_date);
-//                uis->textEdit->append("文件已成功接收");
-//            }
-//            else {  //取消接收
-//                QDateTime current_date_time = QDateTime::currentDateTime();
-//                QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-//                uis->textEdit->append(current_date);
-//                uis->textEdit->append("取消接收文件");
-//                while ((nRecv = ::recv(sockConnFile, recvBuf, sizeof(recvBuf), 0)) > 0) {}
-//            }
-//        }
-//        else
-//            break;
-//    }
 }
 
 void server::on_findFileButton_clicked() {
@@ -243,27 +189,49 @@ void server::on_findFileButton_clicked() {
 }
 
 void server::on_sendFileButton_clicked() {
-    char buff[10000];                    //发送缓冲区
+    // 创建套接字去connect对面
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    FILE *fp = fopen(ui->filePath->toPlainText().toUtf8().data(), "rb");   //以二进制方式打开文件
-    if (fp == NULL) {
-        QMessageBox::information(this, "Error", "Cannot open file");
+
+    //向服务器发起请求
+    sockaddr_in sockAddr;
+    memset(&sockAddr, 0, sizeof(sockAddr));  //每个字节都用0填充
+    sockAddr.sin_family = PF_INET;
+    sockAddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+    sockAddr.sin_port = htons(9998);
+
+    if(::connect(sock, (struct sockaddr*)&sockAddr, sizeof(SOCKADDR)) == INVALID_SOCKET) {
+        QMessageBox::information(this, "Error", "Connect failed:" + QString(WSAGetLastError()));
         return ;
     }
 
-    int nCount;
-    while ((nCount = fread(buff, 1, sizeof(buff), fp)) > 0) {
-        int e=send(sockConnFile, buff, nCount, 0);
-        if (e == SOCKET_ERROR) {
-            QMessageBox::information(this, "Error", "Send failed");
-            return;
-        }
+
+    //先检查文件是否存在
+    qDebug() << "connect";
+    qDebug()<<ui->filePath->toPlainText().toUtf8().data();
+    QTextCodec *code = QTextCodec::codecForName("GB2312");//解决中文路径问题
+
+    FILE *fp = fopen(code->fromUnicode(ui->filePath->toPlainText().toUtf8()).data(), "rb");  //以二进制方式打开文件
+    if (fp == NULL) {
+        qDebug() << "Cannot open file,press any key to exit!\n";
+        system("pause");
+        exit(0);
     }
 
-    QDateTime current_date_time =QDateTime::currentDateTime();
-    QString current_date =current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
-    ui->textEdit->append(current_date);
-    ui->textEdit->append("文件" + ui->filePath->toPlainText() + "发送成功");
-    QMessageBox::information(this, "提示", "文件" + ui->filePath->toPlainText() + "发送成功");
-    ui->filePath->clear();
+
+    //循环发送数据，直到文件结尾
+    char buffer[100000] = {0};
+    int nCount;
+    while ((nCount = fread(buffer, 1, 100000, fp)) > 0) {
+        send(sock, buffer, nCount, 0);
+    }
+
+    shutdown(sock,
+             SD_SEND);  //文件读取完毕，断开输出流，向客户端发送FIN包
+    recv(sock, buffer, 100000, 0);  //阻塞，等待客户端接收完毕
+
+
+    //关闭套接字和文件
+    fclose(fp);
+    closesocket(sock);
 }

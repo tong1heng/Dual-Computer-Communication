@@ -26,7 +26,11 @@ class client : public QMainWindow
 
 public:
     explicit client(QWidget *parent = nullptr);
+
     ~client();
+
+public slots:
+    void getFilePath();
 
 private slots:
     void on_connectButton_clicked();
@@ -43,6 +47,10 @@ private:
     SOCKET sockClientFile;
     static void* ctrlRecv(void* args);
     static void* ctrlRecvFile(void* args);
+
+    static client* MyPointerC;
+signals:
+    void createQFileDialogC();
 };
 
 void ui_init(Ui::client *ui_ptr);

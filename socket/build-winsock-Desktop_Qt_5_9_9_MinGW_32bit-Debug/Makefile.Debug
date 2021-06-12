@@ -228,6 +228,8 @@ debug/moc_client.cpp: D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMainWind
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMessageBox \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/qmessagebox.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QDebug \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QTextCodec \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/qtextcodec.h \
 		../winsock/client.h \
 		debug/moc_predefs.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/bin/moc.exe
@@ -454,6 +456,8 @@ debug/moc_server.cpp: D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMainWind
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMessageBox \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/qmessagebox.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QDebug \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QTextCodec \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/qtextcodec.h \
 		../winsock/server.h \
 		debug/moc_predefs.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/bin/moc.exe
@@ -602,6 +606,8 @@ debug/client.o: ../winsock/client.cpp ../winsock/client.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMessageBox \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/qmessagebox.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QDebug \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QTextCodec \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/qtextcodec.h \
 		ui_client.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/client.o ../winsock/client.cpp
 
@@ -834,6 +840,8 @@ debug/mainwindow.o: ../winsock/mainwindow.cpp ../winsock/mainwindow.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMessageBox \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/qmessagebox.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QDebug \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QTextCodec \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/qtextcodec.h \
 		ui_server.h \
 		../winsock/client.h \
 		ui_client.h
@@ -953,6 +961,8 @@ debug/server.o: ../winsock/server.cpp ../winsock/server.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/QMessageBox \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtWidgets/qmessagebox.h \
 		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QDebug \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/QTextCodec \
+		D:/Qt/Qt5.9.9/5.9.9/mingw53_32/include/QtCore/qtextcodec.h \
 		ui_server.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/server.o ../winsock/server.cpp
 
