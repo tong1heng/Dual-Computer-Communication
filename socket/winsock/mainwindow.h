@@ -20,6 +20,8 @@ private slots:
 
     void on_goToClient_clicked();
 
+    void on_exitButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

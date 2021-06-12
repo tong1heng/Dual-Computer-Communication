@@ -6,11 +6,12 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <WinSock2.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <pthread.h>
 #include <iostream>
 #include <QDebug>
+#include <QTextCodec>
 
 
 namespace Ui {
@@ -27,18 +28,30 @@ public:
     explicit server(QWidget *parent = nullptr);
     ~server();
 
+public slots:
+    void getFilePath();
+
 private slots:
     void on_start_clicked();
 
-    void on_file_clicked();
+    void on_sendMessageButton_clicked();
 
-    void on_sendMessage_clicked();
+    void on_findFileButton_clicked();
+
+    void on_sendFileButton_clicked();
+
+    void on_exitButton_clicked();
 
 private:
     Ui::server *ui;
-    SOCKET sockConn;
-    static void* ctrlRecvS(void *args);
+    SOCKET sockConnMsg;
+    static void* ctrlRecvMsg(void *args);
+    static void* ctrlRecvFile(void* args);
+    static server* MyPointer;
+signals:
+    void createQFileDialog();
 };
-void i_init(Ui::server *ui_ptr);
+
+void ui_init(Ui::server *ui_ptr);   //初始化指针uis
 
 #endif // SERVER_H

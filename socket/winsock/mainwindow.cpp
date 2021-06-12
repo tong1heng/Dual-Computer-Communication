@@ -21,14 +21,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_goToServer_clicked()
 {
-    this->hide();
+    this->close();
     server* s=new server;
     s->show();
 }
 
 void MainWindow::on_goToClient_clicked()
 {
-    this->hide();
+    this->close();
     client* c=new client;
     c->show();
+}
+
+void MainWindow::on_exitButton_clicked()
+{
+    this->close();
 }
