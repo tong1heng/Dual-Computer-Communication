@@ -178,7 +178,7 @@
           </property>
           <property name="icon">
            <iconset resource="icon.qrc">
-            <normaloff>:/button/icons/clear.png</normaloff>:/button/icons/clear.png</iconset>
+            <normaloff>:/button/icons/clearButton.png</normaloff>:/button/icons/clearButton.png</iconset>
           </property>
          </widget>
         </item>
@@ -214,7 +214,7 @@
           </property>
           <property name="icon">
            <iconset resource="icon.qrc">
-            <normaloff>:/button/icons/clear.png</normaloff>:/button/icons/clear.png</iconset>
+            <normaloff>:/button/icons/clearButton.png</normaloff>:/button/icons/clearButton.png</iconset>
           </property>
          </widget>
         </item>
@@ -230,7 +230,7 @@
           </property>
           <property name="icon">
            <iconset resource="icon.qrc">
-            <normaloff>:/button/icons/send.png</normaloff>:/button/icons/send.png</iconset>
+            <normaloff>:/button/icons/sendButton.png</normaloff>:/button/icons/sendButton.png</iconset>
           </property>
           <property name="checkable">
            <bool>false</bool>
@@ -269,7 +269,7 @@
           </property>
           <property name="icon">
            <iconset resource="icon.qrc">
-            <normaloff>:/button/icons/browse.png</normaloff>:/button/icons/browse.png</iconset>
+            <normaloff>:/button/icons/browseButton.png</normaloff>:/button/icons/browseButton.png</iconset>
           </property>
          </widget>
         </item>
@@ -285,7 +285,7 @@
           </property>
           <property name="icon">
            <iconset resource="icon.qrc">
-            <normaloff>:/button/icons/send.png</normaloff>:/button/icons/send.png</iconset>
+            <normaloff>:/button/icons/sendButton.png</normaloff>:/button/icons/sendButton.png</iconset>
           </property>
           <property name="checkable">
            <bool>false</bool>

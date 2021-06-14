@@ -13,8 +13,8 @@
         <file>icons/voiceButton.png</file>
         <file>icons/startButton.png</file>
         <file>icons/endCallButton.png</file>
-        <file>icons/browse.png</file>
-        <file>icons/clear.png</file>
-        <file>icons/send.png</file>
+        <file>icons/browseButton.png</file>
+        <file>icons/clearButton.png</file>
+        <file>icons/sendButton.png</file>
     </qresource>
 </RCC>
