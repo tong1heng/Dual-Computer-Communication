@@ -43,15 +43,25 @@ private slots:
 
     void on_exitButton_clicked();
 
+    void on_clearTextButton_clicked();
+
+    void on_clearMessageButton_clicked();
+
+    void on_goToVoiceChatButton_clicked();
+
+    void addEndChatLog();
+
 private:
     Ui::client *ui;
-    SOCKET sockClient;
+    WSADATA wsaMsg,wsaFile;
+    SOCKET sockClientMsg;
     SOCKET sockClientFile;
     static void* ctrlRecvMsg(void* args);
     static void* ctrlRecvFile(void* args);
     static client* MyPointer;
 signals:
     void createQFileDialog();
+    void sendAddress(QString addr);
 };
 
 void ui_init(Ui::client *ui_ptr);   //初始化指针uic

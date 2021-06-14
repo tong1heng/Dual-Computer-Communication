@@ -1,4 +1,6 @@
 QT       += core gui
+QT       += network
+QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,19 +19,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     client.cpp \
+    clientAudio.cpp \
     main.cpp \
     mainwindow.cpp \
-    server.cpp
+    server.cpp \
+    serverAudio.cpp
 
 HEADERS += \
     client.h \
+    clientAudio.h \
     mainwindow.h \
-    server.h
+    server.h \
+    serverAudio.h
 
 FORMS += \
     client.ui \
+    clientAudio.ui \
     mainwindow.ui \
-    server.ui
+    server.ui \
+    serverAudio.ui
 
 LIBS += -lWs2_32
 
@@ -37,3 +45,6 @@ LIBS += -lWs2_32
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    icon.qrc

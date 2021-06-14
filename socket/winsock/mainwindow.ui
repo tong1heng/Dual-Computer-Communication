@@ -29,19 +29,24 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Welcome</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icon.qrc">
+    <normaloff>:/window/icons2/peer-to-peer.png</normaloff>:/window/icons2/peer-to-peer.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
     <item alignment="Qt::AlignHCenter">
      <widget class="QLabel" name="label">
       <property name="font">
        <font>
+        <family>方正粗黑宋简体</family>
         <pointsize>15</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>双机通信</string>
+       <string>Dual Computer Communication</string>
       </property>
      </widget>
     </item>
@@ -49,37 +54,33 @@
      <widget class="QLabel" name="label_2">
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <family>Calibri</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>Copyright@TongYiheng,MaZhaojia 2021.6</string>
-      </property>
-     </widget>
-    </item>
-    <item alignment="Qt::AlignHCenter">
-     <widget class="QLabel" name="label_3">
-      <property name="font">
-       <font>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Choose your role</string>
+       <string>©2021 Yiheng Tong, Zhaojia Ma. All rights reserved.</string>
       </property>
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
       <item>
        <widget class="QPushButton" name="goToServer">
         <property name="font">
          <font>
+          <family>黑体</family>
           <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="text">
          <string>Server</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icon.qrc">
+          <normaloff>:/button/icons/serverButton.png</normaloff>:/button/icons/serverButton.png</iconset>
         </property>
        </widget>
       </item>
@@ -87,11 +88,16 @@
        <widget class="QPushButton" name="goToClient">
         <property name="font">
          <font>
+          <family>黑体</family>
           <pointsize>11</pointsize>
          </font>
         </property>
         <property name="text">
          <string>Client</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icon.qrc">
+          <normaloff>:/button/icons/clientButton.png</normaloff>:/button/icons/clientButton.png</iconset>
         </property>
        </widget>
       </item>
@@ -99,11 +105,19 @@
        <widget class="QPushButton" name="exitButton">
         <property name="font">
          <font>
+          <family>黑体</family>
           <pointsize>11</pointsize>
          </font>
         </property>
         <property name="text">
          <string>Exit</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icon.qrc">
+          <normaloff>:/button/icons/exitButton.png</normaloff>:/button/icons/exitButton.png</iconset>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -123,6 +137,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="icon.qrc"/>
+ </resources>
  <connections/>
 </ui>

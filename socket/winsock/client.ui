@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Client</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icon.qrc">
+    <normaloff>:/window/icons2/client.png</normaloff>:/window/icons2/client.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,12,2,2">
@@ -19,6 +23,7 @@
      <widget class="QLabel" name="label">
       <property name="font">
        <font>
+        <family>方正粗黑宋简体</family>
         <pointsize>15</pointsize>
        </font>
       </property>
@@ -110,17 +115,25 @@
           <property name="text">
            <string>连接</string>
           </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/connectButton.png</normaloff>:/button/icons/connectButton.png</iconset>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="disconnectButton">
+         <widget class="QPushButton" name="goToVoiceChatButton">
           <property name="font">
            <font>
             <pointsize>11</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>断开</string>
+           <string>语音</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/voiceButton.png</normaloff>:/button/icons/voiceButton.png</iconset>
           </property>
          </widget>
         </item>
@@ -133,6 +146,10 @@
           </property>
           <property name="text">
            <string>退出</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/exitButton.png</normaloff>:/button/icons/exitButton.png</iconset>
           </property>
          </widget>
         </item>
@@ -150,7 +167,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="clearTextButton">
           <property name="font">
            <font>
             <pointsize>11</pointsize>
@@ -158,6 +175,10 @@
           </property>
           <property name="text">
            <string>清空</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/clear.png</normaloff>:/button/icons/clear.png</iconset>
           </property>
          </widget>
         </item>
@@ -182,7 +203,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="clearMessageButton">
           <property name="font">
            <font>
             <pointsize>11</pointsize>
@@ -190,6 +211,10 @@
           </property>
           <property name="text">
            <string>清空</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/clear.png</normaloff>:/button/icons/clear.png</iconset>
           </property>
          </widget>
         </item>
@@ -202,6 +227,10 @@
           </property>
           <property name="text">
            <string>发送</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/send.png</normaloff>:/button/icons/send.png</iconset>
           </property>
           <property name="checkable">
            <bool>false</bool>
@@ -238,6 +267,10 @@
           <property name="text">
            <string>浏览</string>
           </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/browse.png</normaloff>:/button/icons/browse.png</iconset>
+          </property>
          </widget>
         </item>
         <item>
@@ -249,6 +282,10 @@
           </property>
           <property name="text">
            <string>发送</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icon.qrc">
+            <normaloff>:/button/icons/send.png</normaloff>:/button/icons/send.png</iconset>
           </property>
           <property name="checkable">
            <bool>false</bool>
@@ -273,6 +310,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="icon.qrc"/>
+ </resources>
  <connections/>
 </ui>

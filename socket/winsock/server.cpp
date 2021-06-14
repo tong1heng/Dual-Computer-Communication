@@ -1,5 +1,6 @@
 #include "server.h"
 #include "ui_server.h"
+#include "serverAudio.h"
 
 QString saveFilePathS;                  //保存文件路径
 server* server::MyPointer = nullptr;    //用于静态成员函数发送信号
@@ -20,6 +21,10 @@ server::server(QWidget *parent) :
 }
 
 server::~server() { //析构函数
+    closesocket(sockSrvMsg);
+    closesocket(sockSrvFile);
+    closesocket(sockConnMsg);
+    WSACleanup();
     delete ui;
 }
 
@@ -32,9 +37,13 @@ void server::on_exitButton_clicked() {
 }
 
 void server::on_start_clicked() { //服务器点击“启动”
-    WSADATA wsaMsg,wsaFile;                         //分别用于消息和文件
+    if(ui->messagePort->text() == "") {
+        QMessageBox::information(this, "提示", "请输入消息端口号");
+        return;
+    }
+    ui->messagePort->setReadOnly(true);
+
     int portMsg = ui->messagePort->text().toInt();
-//    int portFile = ui->filePort->text().toInt();
 
     if(WSAStartup(MAKEWORD(2, 2), &wsaMsg) != 0 || WSAStartup(MAKEWORD(2, 2), &wsaFile) != 0) { //加载套接字库
         QMessageBox::information(this, "Error", "Failed to load Winsock");
@@ -42,8 +51,8 @@ void server::on_start_clicked() { //服务器点击“启动”
     }
 
     //创建用于监听的套接字，分别用于消息和文件
-    SOCKET sockSrvMsg = socket(AF_INET, SOCK_STREAM, 0);
-    SOCKET sockSrvFile = socket(AF_INET, SOCK_STREAM, 0);
+    sockSrvMsg = socket(AF_INET, SOCK_STREAM, 0);
+    sockSrvFile = socket(AF_INET, SOCK_STREAM, 0);
 
     SOCKADDR_IN addrSrvMsg;
     addrSrvMsg.sin_family = AF_INET;
@@ -67,7 +76,6 @@ void server::on_start_clicked() { //服务器点击“启动”
         QMessageBox::information(this, "Error", "Listen failed:" + QString(WSAGetLastError()));
         return ;
     }
-
     ui->textEdit->append("启动成功，等待连接...");
     /* accept */
     SOCKADDR_IN addrClient;
@@ -80,6 +88,7 @@ void server::on_start_clicked() { //服务器点击“启动”
     }
 
     ui->textEdit->append("Accept client IP:" + QString(inet_ntoa(addrClient.sin_addr)));
+    clientIP = QString(inet_ntoa(addrClient.sin_addr));
     
     //发送打招呼消息
     char buf[] = "Server: Hello, I'm a server!";
@@ -157,6 +166,11 @@ void server::on_sendFileButton_clicked() {
         return ;
     }
 
+    //客户端IP地址
+    char *Addr;
+    QByteArray q = clientIP.toUtf8();
+    Addr = q.data();
+
     // 创建套接字去connect对面
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -164,9 +178,7 @@ void server::on_sendFileButton_clicked() {
     sockaddr_in sockAddr;
     memset(&sockAddr, 0, sizeof(sockAddr));  //每个字节都用0填充
     sockAddr.sin_family = PF_INET;
-
-    /*                  需要知道client的ip                       */
-    sockAddr.sin_addr.S_un.S_addr = inet_addr("192.168.43.235");
+    sockAddr.sin_addr.S_un.S_addr = inet_addr(Addr);
     sockAddr.sin_port = htons(9998);
 
     if((unsigned long long)::connect(sock, (struct sockaddr*)&sockAddr, sizeof(SOCKADDR)) == INVALID_SOCKET) {
@@ -181,6 +193,7 @@ void server::on_sendFileButton_clicked() {
     FILE *fp = fopen(code->fromUnicode(ba).data(), "rb");   //以二进制方式打开文件
     if (fp == NULL) {
         QMessageBox::information(this, "Error", "Cannot open the selected file");
+        return ;
     }
 
     //循环发送数据，直到文件结尾
@@ -189,7 +202,10 @@ void server::on_sendFileButton_clicked() {
     while ((nCount = fread(buffer, 1, 100000, fp)) > 0) {
         send(sock, buffer, nCount, 0);
     }
-
+    QDateTime current_date_time = QDateTime::currentDateTime();
+    QString current_date = current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+    ui->textEdit->append(current_date);
+    ui->textEdit->append("文件" + fP + "已发送");
     shutdown(sock,SD_SEND);         //文件读取完毕，断开输出流，向客户端发送FIN包
     recv(sock, buffer, 100000, 0);  //阻塞，等待客户端接收完毕
 
@@ -228,9 +244,39 @@ void* server::ctrlRecvFile(void* args) {
             fwrite(buffer, nCount, 1, fp);
             //qDebug()<<"fwrite()";
         }
-
+        QDateTime current_date_time = QDateTime::currentDateTime();
+        QString current_date = current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+        uis->textEdit->append(current_date);
+        uis->textEdit->append("文件" + saveFilePathS + "已接收");
         fclose(fp);
         closesocket(sockConnFile);
         saveFilePathS = "";
     }
+}
+
+void server::on_clearTextButton_clicked() {
+    ui->textEdit->clear();
+}
+
+void server::on_clearMessageButton_clicked() {
+    ui->message->clear();
+}
+
+void server::on_goToVoiceChatButton_clicked() {
+    serverAudio* SA=new serverAudio;
+    connect(this, SIGNAL(sendAddress(QString)), SA, SLOT(receiveAddress(QString)));
+    connect(SA, SIGNAL(endChat()), this, SLOT(addEndChatLog()));
+    emit this->sendAddress(clientIP);
+    SA->show();
+    QDateTime current_date_time = QDateTime::currentDateTime();
+    QString current_date = current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+    ui->textEdit->append(current_date);
+    ui->textEdit->append("语音通话开始");
+}
+
+void server::addEndChatLog() {
+    QDateTime current_date_time = QDateTime::currentDateTime();
+    QString current_date = current_date_time.toString("yyyy年MM月dd日 hh:mm:ss");
+    ui->textEdit->append(current_date);
+    ui->textEdit->append("语音通话结束");
 }

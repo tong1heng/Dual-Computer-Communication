@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/window">
+        <file>icons2/chat.png</file>
+        <file>icons2/server.png</file>
+        <file>icons2/client.png</file>
+        <file>icons2/peer-to-peer.png</file>
+    </qresource>
+    <qresource prefix="/button">
+        <file>icons/clientButton.png</file>
+        <file>icons/connectButton.png</file>
+        <file>icons/exitButton.png</file>
+        <file>icons/serverButton.png</file>
+        <file>icons/voiceButton.png</file>
+        <file>icons/startButton.png</file>
+        <file>icons/endCallButton.png</file>
+        <file>icons/browse.png</file>
+        <file>icons/clear.png</file>
+        <file>icons/send.png</file>
+    </qresource>
+</RCC>
