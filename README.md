@@ -54,6 +54,7 @@ signals:
 - 当服务端接收到客户端发来的消息时，通过socket中的recv将消息接收到缓冲区中，将其显示在屏幕控件上。
 - 当服务端向客户端发送文件时，首先创建一个套接字去连接客户端，向客户端发起连接请求，然后通过QFileDialog选择需要发送的文件，通过二进制格式将其打开，循环发送数据直到文件结尾，发送完毕后关闭套接字和文件。
 - 当服务端接收到客户端发送的文件时，首先accept客户端发起的连接，然后通过QFileDialog选择文件的保存路径以及文件名，通过二进制将其打开，不断循环接收数据写入文件中，接收完毕后关闭文件和套接字。
+
 **client**：封装client类，私有成员包括ui指针，分别用于消息通信和文件传输的wsaMsg和wsaFile，套接字sockClientMsg，sockClientFile，静态成员函数包括接收消息和接收文件的线程函数ctrlRecvMsg和ctrlRecvFile，另外还有一些需要的信号和槽函数。
 ```cpp
 class client : public QMainWindow
@@ -139,6 +140,7 @@ signals:
 接收：将udp套接字对象和IP地址、端口号绑定，通过QAudioFormat对象设置采样参数，当接收到数据后，通过调用槽函数接收采样数据，并进行播放。
 - 准备发送就绪后，通过音频采样不断发送采样数据。
 - 当接收到数据后，不断接收音频数据，并实时播放。
+
 **client**：封装clientAudio类，私有成员包括ui指针，客户端的IP地址，用于音频信号发送和接收的QUdpSocket对象udpSocketSend和udpSocketReceive，和音频信号相关的对象input, inputDevice, output, outputDevice，音频数据缓冲区video，槽函数包括发送就绪和接收到数据后的操作，还有一些其他需要的信号和槽函数。
 ```cpp
 class clientAudio : public QMainWindow
