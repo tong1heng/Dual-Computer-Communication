@@ -184,9 +184,9 @@ signals:
 - 当接收到数据后，不断接收音频数据，并实时播放。
 ## UI design
 ### WelcomeWindow
-![welcome](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630091958.png?token=GHSAT0AAAAAABM2CPNENA6YCZTLV75WCC5IYSOJKMQ)
+![welcome](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630091958.png?token=GHSAT0AAAAAABM2CPNEFOPRTG3V43MMDU2AYSOJP3A)
 ### ServerWindow
-![server](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092127.png?token=GHSAT0AAAAAABM2CPNFSTVFIRSTLUOG3KYWYSOJKQA)
+![server](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092127.png?token=GHSAT0AAAAAABM2CPNERPXTXYALVBFWXMZCYSOJQJA)
 ### ClientWindow
 ![client](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092141.png?token=GHSAT0AAAAAABM2CPNEHU4J2ZMA4R64GCBQYSOJOKA)
 ### VoIPWindow
