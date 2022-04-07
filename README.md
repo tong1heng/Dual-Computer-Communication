@@ -184,13 +184,13 @@ signals:
 - 当接收到数据后，不断接收音频数据，并实时播放。
 ## UI design
 ### WelcomeWindow
-![welcome](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630091958.png?token=GHSAT0AAAAAABM2CPNEFOPRTG3V43MMDU2AYSOJP3A)
+![welcome](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630091958.png)
 ### ServerWindow
-![server](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092127.png?token=GHSAT0AAAAAABM2CPNERPXTXYALVBFWXMZCYSOJQJA)
+![server](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092127.png)
 ### ClientWindow
-![client](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092141.png?token=GHSAT0AAAAAABM2CPNEHU4J2ZMA4R64GCBQYSOJOKA)
+![client](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092141.png)
 ### VoIPWindow
-![voice](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092156.png?token=GHSAT0AAAAAABM2CPNFOBYYIBZMJB7S4LAEYSOJOKQ)
+![voice](https://raw.githubusercontent.com/TongYiheng/MarkdownPictures/main/Dual-Computer-Communication/20210630092156.png)
 ## Problems solved
 - 消息通信：服务器和客户端一直保持TCP连接，使用的端口号由用户输入指定。
 - 文件传输：当某个方向需要传输时，先进行单向的TCP连接，传输完成后立刻断开这个连接，服务器和客户端都进入监听状态，等待下一次连接。服务端发送、客户端接收使用端口9998，客户端发送、服务端接收使用端口9999.
